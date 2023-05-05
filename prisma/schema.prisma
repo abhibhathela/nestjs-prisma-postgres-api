@@ -1,0 +1,40 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Books {
+  id       Int        @id @default(autoincrement())
+  title    String
+  genre    String
+  price    Decimal    @db.Decimal(10, 2)
+  quantity Int
+  authorId   Int
+  authors  Authors    @relation(fields: [authorId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  BookTags BookTags[]
+}
+
+model Authors {
+  id    Int     @id @default(autoincrement())
+  name  String
+  Books Books[]
+}
+
+model BookTags {
+  bookid Int
+  tagid  Int
+  books  Books @relation(fields: [bookid], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  tags   Tags  @relation(fields: [tagid], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@id([bookid, tagid])
+}
+
+model Tags {
+  id       Int        @id @default(autoincrement())
+  name     String
+  booktags BookTags[]
+}
